@@ -53,6 +53,7 @@ This section is a brief format descriiption of the file types used to store the 
   Sections:
   4-byte size value for the current section
   3-byte zero-width space section break 0xEFBBBF (Optional, not found in Japanese files)
+  SECTION TITLE ENCODED AS UTF-8 followed by 0x00 terminator
   SECTION TEXT ENCODED AS UTF-8 (Line endings can be 0x0D0A or 0x0A (Windows or Unix) )
   One or more 0x00 null terminator bytes
   ```
