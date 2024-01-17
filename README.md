@@ -3,6 +3,12 @@
 LibRipper is a basic extraction utility for the text of the library books in Solatorobo: Red the Hunter.
 At present, this utility only extracts the text, and puts it in a basic layout. However, it supports all six languages supported by the DS (Japanese, English, French, Spanish, German and Italian).
 
+Starting from the game's root directory, the library files can be found in /data/etc/libparam*.ccb. There are different libparam files for every language the game supports.
+
+These .ccb files are compressed archives. To extract them, you can use Console Tool or my own CCBExtractor utility, which can be found at https://github.com/SolatoroboHacking/CCBUtils
+
+Inside those .ccb archives are two types of files: .cclbm and .cclhd. The contents and layouts of these formats is described below. They can both be extracted with this tool.
+
 ## Build Instructions
 
 This project was designed to be built with MinGW for Cygwin for Windows binaries, or Linux using the g++ compiler. However, it will likely compile under any
