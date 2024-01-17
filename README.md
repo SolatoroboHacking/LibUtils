@@ -64,6 +64,8 @@ This section is a brief format descriiption of the file types used to store the 
   ```
   Header:
   16-byte header, values are currently not understood, but seem to be ignored by the game as long as first byte is 0x03
+
+  Sections:
   3-byte zero-width space section break 0xEFBBBF (Optional, not found in Japanese files)
   SECTION TEXT ENCODED AS UTF-8 (Line endings can be 0x0D0A or 0x0A (Windows or Unix) )
   One 0x00 null terminator byte
