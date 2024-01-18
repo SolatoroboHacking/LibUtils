@@ -39,12 +39,12 @@ If the input file is a .cclhd (CyberConnect Library Header) file, the output fil
 
 ## Format Descriptions
 
-This section is a brief format descriiption of the file types used to store the library books in Solatorobo.
+This section is a brief format description of the file types used to store the library books in Solatorobo.
 
   ### CCLBM Files (CyberConnect Library Materials)
 
   These files contain the actual content of the library books, including section titles and text. They are limited to having three sections.
-  The one thing they do not contain is the accompanying images that are displayed on the top screen.
+  The one thing they do not contain is the accompanying images that are displayed on the top screen. These graphics are located in /data/pic/pic3.ccb. There are 21 graphics in total, 3 for each section of the 7 library books.
   
   ```
   Header:
@@ -64,18 +64,21 @@ This section is a brief format descriiption of the file types used to store the 
   These files contain the title of the library book that shows up in the Library menu, as well as the scrolling hint at the top of the Library menu that suggests how you unlock the book.
   ```
   Header:
-  16-byte header, values are currently not understood, but seem to be ignored by the game as long as first byte is 0x03
+  4-byte identifier (0x03000000)
+  3 unsigned 32-bit integers - Each integer represents the number of times the player must repeat an action to unlock a section of the book. The action cannot be changed via this header, but the number of times it must be     repeated can.
 
   Sections:
   3-byte zero-width space section break 0xEFBBBF (Optional, not found in Japanese files)
   SECTION TEXT ENCODED AS UTF-8 (Line endings can be 0x0D0A or 0x0A (Windows or Unix) )
   One 0x00 null terminator byte
+
+  Note: Header files have only 1 section with a title and its content.
   ```
 
   
   
 ## What is currently unknown?
-There is currently no known method to change the conditions the player has to meet to unlock a particular library book. It is also unknown if there is a way to bypass the three-section limit for each library book or change the total number of library books that exist. 
+There is currently no known method to change what action the player must repeat to unlock the books, though the number of repititions can be changed. It is also unknown if there is a way to bypass the three-section limit for each library book or change the total number of library books that exist. 
 
 ## What's still to come?
 This repository will eventually contain a companion utility to replace the library book text with arbitrary text. This will be accomplished with an adapted markdown language to designate section breaks. LibRipper will also eventually be able to export library files as either readable text (how it currently exports them) or into this markdown language for simpler modification.
