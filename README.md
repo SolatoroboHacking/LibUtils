@@ -1,7 +1,7 @@
 # LibRipper
 
 LibRipper is a basic extraction utility for the text of the library books in Solatorobo: Red the Hunter.
-At present, this utility only extracts the text, and puts it in a basic layout. However, it supports all six languages supported by the DS (Japanese, English, French, Spanish, German and Italian).
+This utility extracts the text, and can convert it to either a readable layout, or a markdown layout suitable for use with LibCreate. It supports all six languages supported by the DS (Japanese, English, French, Spanish, German and Italian).
 
 Starting from the game's root directory, the library files can be found in /data/etc/libparam*.ccb. There are different libparam files for every language the game supports.
 
@@ -37,6 +37,48 @@ If the input file is a .cclbm (CyberConnect Library Material(?)) file, the outpu
 
 If the input file is a .cclhd (CyberConnect Library Header) file, the output file will have the same name as the input file, but with the .txt extension added. EX: libanimal_en.cclhd becomes libanimal_en.cclhd.txt
 
+Note: It is recommended to leave the filenames intact when using LibRipper, as it relies on the presence of the .cclhd file extension to determine if it is working with a header file or a library file.
+
+# LibCreate
+
+LibCreate is a utility that can be used to replace the text of any of the library books in Solatorobo for any language the game supports, as well as their titles and scrolling hint text.
+
+LibCreate can generate .cclbm and .cclhd files that can be placed back into the original libparam*.ccb files using my own CCBConstructor utility (which can be found at https://github.com/SolatoroboHacking/CCBUtils) and then re-inserted into the DS ROM using a tool like Tinke. 
+
+Text files should contain "<sec>" and "<end>" flags, 2 pairs of each for header files, and 6 pairs of each for library files (there are 3 sections, and each one has 2 pairs; one for title, one for content)
+
+All content outside these sections will be ignored. However, the correct number of sections must be present
+
+To see an example of this, extract one of the unmodified library files with LibRipper using the -m parameter.
+
+LibCreate also sets how many repititions of a particular action the player must perform to unlock each section of the book. These parameters are required when generating a header file.
+
+## Build Instructions
+
+This project was designed to be built with MinGW for Cygwin for Windows binaries, or Linux using the g++ compiler. However, it will likely compile under any
+C++ compiler.
+
+
+  ### Cygwin instructions
+
+  ```
+  x86_64-w64-mingw32-g++ --static -o LibCreate.exe LibCreate.cpp
+  ```
+
+  ### Linux instructions
+
+  ```
+  g++ --static -o LibCreate LibCreate.cpp
+  ```
+
+## Usage Instructions
+
+```
+LibCreate [INPUT_FILE] [OUTPUT_FILE] (-h unlock1 unlock2 unlock3)
+```
+
+Use the -h parameter to generate a .cclhd header file, and supply 3 base-10 integers that will decide how many repitions the player must perform to unlock the corresponding book.
+
 ## Format Descriptions
 
 This section is a brief format description of the file types used to store the library books in Solatorobo.
@@ -65,7 +107,10 @@ This section is a brief format description of the file types used to store the l
   ```
   Header:
   4-byte identifier (0x03000000)
-  3 unsigned 32-bit integers - Each integer represents the number of times the player must repeat an action to unlock a section of the book. The action cannot be changed via this header, but the number of times it must be     repeated can.
+  3 unsigned 32-bit integers - Each integer represents the number of times the player must
+                               repeat an action to unlock a section of the book. The action
+                               cannot be changed via this header, but the number of times it must be
+                               repeated can.
 
   Sections:
   3-byte zero-width space section break 0xEFBBBF (Optional, not found in Japanese files)
@@ -79,6 +124,3 @@ This section is a brief format description of the file types used to store the l
   
 ## What is currently unknown?
 There is currently no known method to change what action the player must repeat to unlock the books, though the number of repititions can be changed. It is also unknown if there is a way to bypass the three-section limit for each library book or change the total number of library books that exist. 
-
-## What's still to come?
-This repository will eventually contain a companion utility to replace the library book text with arbitrary text. This will be accomplished with an adapted markdown language to designate section breaks. LibRipper will also eventually be able to export library files as either readable text (how it currently exports them) or into this markdown language for simpler modification.
