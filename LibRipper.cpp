@@ -2,7 +2,7 @@
 
 LibRipper
 
-Copyright 2023 (C) - SolatoroboHacking
+Copyright 2024 (C) - SolatoroboHacking
 
 This program is free software: you can redistribute it and/or 
 modify it under the terms of the GNU General Public License as 
@@ -23,6 +23,8 @@ If not, see <https://www.gnu.org/licenses/>.
 // Importing essential libraries
 #include <iostream>
 #include <fstream>
+#include <cstring>
+#include <filesystem>
 
 using namespace std;
 
@@ -60,6 +62,40 @@ void convertReadable(unsigned char* inputText, FILE* outputFile, uint32_t sectio
 	return;
 }
 
+// Function to convert the raw text from the library files into markdown for modification and re-insertion
+void convertMarkdown(unsigned char* inputText, FILE* outputFile, uint32_t sectionSize) {
+	// Insert section start flag
+	fputs("<sec>", outputFile);
+	// For every byte in the current section,
+	for (uint32_t i = 0; i < sectionSize; i++) {
+		// If there is a null byte,
+		if (inputText[i] == 0x00) {
+			//Skip over all the null bytes
+			while (inputText[i+1] == 0x00 && i < sectionSize - 1) {
+				i++;
+			}
+			// Insert a section end flag
+			fputs("<end>\n\n", outputFile);
+			// If we are not at the end of the section,
+			if (i < sectionSize - 1) {
+				// This must be a title, so add another section start flag for the content
+				fputs("\n<sec>", outputFile);
+			}
+			// If the file contains 0xEFBBBF section breaks,
+		} else if (inputText[i] == 0xEF && inputText[i+1] == 0xBB && inputText[i+2] == 0xBF) {
+			// Skip over them
+			i = i + 2;
+
+			// If the current character is just a regular character,
+		} else {
+			// Write it to the output
+			fputc(inputText[i], outputFile);
+		}
+	}
+	// Return when done wiith the current section
+	return;
+}
+
 
 // Main function
 int main(int argc, char** argv) {
@@ -68,6 +104,18 @@ int main(int argc, char** argv) {
 		// Error out
 		cout << "Error: Provide input file" << endl;
 		return 1;
+	} else {
+		// If the input file does not exist,
+		if (!filesystem::exists(argv[1])) {
+			// Error out
+			cout << "Error: input file does not exist" << endl;
+			return 1;
+		}
+	}
+	bool GENERATE_MARKDOWN;
+	// If the -m parameter was passed, set the flag to generate markdown instead of readable text
+	if (argc >= 3 && strcmp(argv[2], "-m") == 0) {
+		GENERATE_MARKDOWN = true;
 	}
 	// Open source file
 	FILE* inputFile = fopen(argv[1], "rb");
@@ -82,6 +130,10 @@ int main(int argc, char** argv) {
 		fseek(inputFile, 16, SEEK_SET);
 		// Run the following code twice; once for the section title, once for the hint
 		for (int i = 0; i < 2; i++) {
+			// If generating markdown, insert a section start flag
+			if (GENERATE_MARKDOWN) {
+				fputs("<sec>", outputFile);
+			}
 			// Define an unsigned char to hold current byte (we do not know or need to know the size of the section)
 			unsigned char currentByte = fgetc(inputFile);
 			// While the current byte is not 0x00, the null terminator,
@@ -107,6 +159,10 @@ int main(int argc, char** argv) {
 				// Read the next input byte
 				currentByte = fgetc(inputFile);
 			}
+			// If generating markdown, insert a sectio end flag
+			if (GENERATE_MARKDOWN) {
+				fputs("<end>", outputFile);
+			}
 			// Write line breaks after each section
 			fputs("\n\n", outputFile);
 		}
@@ -130,11 +186,17 @@ int main(int argc, char** argv) {
 			// Read the current section into the buffer
 			readBytes = new unsigned char[sectionSize];
 			fread(readBytes, 1, sectionSize, inputFile);
-			// Send the current section off to be converted into a readable layout
-			convertReadable(readBytes, outputFile, sectionSize);
-			// If we are not at the last section, write a section break when done with the current section
-			if (i != 2) {
-				fputs("\n---------------------\n\n\n", outputFile);
+			// If generating markdown, use the markdown function
+			if (GENERATE_MARKDOWN) {
+				convertMarkdown(readBytes, outputFile, sectionSize);
+				// Otherwise,
+			} else {
+				// Send the current section off to be converted into a readable layout
+				convertReadable(readBytes, outputFile, sectionSize);
+				// If we are not at the last section, write a section break when done with the current section
+				if (i != 2) {
+					fputs("\n---------------------\n\n\n", outputFile);
+				}
 			}
 		}
 		// Close the output file
