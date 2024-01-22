@@ -45,7 +45,7 @@ LibCreate is a utility that can be used to replace the text of any of the librar
 
 LibCreate can generate .cclbm and .cclhd files that can be placed back into the original libparam*.ccb files using my own CCBConstructor utility (which can be found at https://github.com/SolatoroboHacking/CCBUtils) and then re-inserted into the DS ROM using a tool like Tinke. 
 
-Text files should contain "<sec>" and "<end>" flags, 2 pairs of each for header files, and 6 pairs of each for library files (there are 3 sections, and each one has 2 pairs; one for title, one for content)
+Text files should contain "\<sec\>" and "\<end\>" flags, 2 pairs of each for header files, and 6 pairs of each for library files (there are 3 sections, and each one has 2 pairs; one for title, one for content)
 
 All content outside these sections will be ignored. However, the correct number of sections must be present
 
