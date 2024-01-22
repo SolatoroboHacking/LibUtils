@@ -77,9 +77,9 @@ int main(int argc, char** argv) {
 					for (int i = 4; i < 7; i++) {
 						uint32_t unlock = (uint32_t)stoul(argv[i]);
 						fputc((unsigned char)unlock, outputFile);
-						fputc((unsigned char)unlock >> 8, outputFile);
-						fputc((unsigned char)unlock >> 16, outputFile);
-						fputc((unsigned char)unlock >> 24, outputFile);
+						fputc((unsigned char)(unlock >> 8), outputFile);
+						fputc((unsigned char)(unlock >> 16), outputFile);
+						fputc((unsigned char)(unlock >> 24), outputFile);
 					}
 				}
 			}
@@ -186,9 +186,9 @@ int main(int argc, char** argv) {
 					fseek(outputFile, sectionStart, SEEK_SET);
 					// And write it to the 4 padding bytes written earlier
 					fputc((unsigned char)sectionSize, outputFile);
-					fputc((unsigned char)sectionSize >> 8, outputFile);
-					fputc((unsigned char)sectionSize >> 16, outputFile);
-					fputc((unsigned char)sectionSize >> 24, outputFile);
+					fputc((unsigned char)(sectionSize >> 8), outputFile);
+					fputc((unsigned char)(sectionSize >> 16), outputFile);
+					fputc((unsigned char)(sectionSize >> 24), outputFile);
 					fseek(outputFile, sectionEnd, SEEK_SET);
 				}
 			}
